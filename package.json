@@ -1,5 +1,5 @@
 {
-  "name": "webpack-library-starter",
+  "name": "koalambda",
   "version": "0.0.1",
   "description": "Koa-like middleware framework to build AWS Lambda functions",
   "main": "lib/index.js",
@@ -7,7 +7,9 @@
     "build": "webpack --env dev && webpack --env build && npm run test",
     "dev": "webpack --progress --colors --watch --env dev",
     "test": "mocha --require babel-core/register --colors ./test/*.spec.js",
-    "test:watch": "mocha --require babel-core/register --colors -w ./test/*.spec.js"
+    "test:watch": "mocha --require babel-core/register --colors -w ./test/*.spec.js",
+    "postversion": "git push && git push --tags",
+    "prepublishOnly": "npm run build"
   },
   "repository": {
     "type": "git",
