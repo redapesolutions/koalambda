@@ -1,85 +1,74 @@
-# Webpack library starter
+# Koala-mbda or Koa-Lambda
 
-Webpack based boilerplate for producing libraries (Input: ES6, Output: universal library)
+Koa-style middleware concept to quickly build AWS Lambda functions
 
-![Travis](https://travis-ci.org/krasimir/webpack-library-starter.svg?branch=master)
+Middlewares
+===========
 
-## Features
-
-* Webpack 3 based.
-* ES6 as a source.
-* Exports in a [umd](https://github.com/umdjs/umd) format so your library works everywhere.
-* ES6 test setup with [Mocha](http://mochajs.org/) and [Chai](http://chaijs.com/).
-* Linting with [ESLint](http://eslint.org/).
-
-## Process
+Use Koa style middlewares and the `kompose` method. Examples can be found in handlers e.g. `user/addToHistory.ts`  
+A handler is therefore simply equal to the outcome of `kompose` e.g.
 
 ```
-ES6 source files
-       |
-       |
-    webpack
-       |
-       +--- babel, eslint
-       |
-  ready to use
-     library
-  in umd format
+export const handler = kompose(
+    callbackBased,
+    ...,
+    async (ctx, next) => {
+        ... // <- this is called while going down the middleware chain
+        await next()
+        ... // <- this is called once the bottom of the chain has been reached and we are going back up the chain
+    },
+    ...
+)
 ```
 
-*Have in mind that you have to build your library before publishing. The files under the `lib` folder are the ones that should be distributed.*
+## Rules
 
-## Getting started
+A middleware follows the following rules:
 
-1. Setting up the name of your library
-  * Open `webpack.config.js` file and change the value of `libraryName` variable.
-  * Open `package.json` file and change the value of `main` property so it matches the name of your library.
-2. Build your library
-  * Run `yarn install` (recommended) or `npm install` to get the project's dependencies
-  * Run `yarn build` or `npm run build` to produce minified version of your library.
-3. Development mode
-  * Having all the dependencies installed run `yarn dev` or `npm run dev`. This command will generate an non-minified version of your library and will run a watcher so you get the compilation on file change.
-4. Running the tests
-  * Run `yarn test` or `npm run test`
+- arguments are `ctx:EventContext` and `next` (optional, see Utility middlewares below)
+- `ctx` contains two properties: `event:AWSEvent` and `context:AWSContext`. The event type varies depending on the trigger of the lambda function.
+- All middlewares should be `async` functions; they should always call `await next()` (or `next && await next()` in the case of utility)
+- Code reached _before_ the `await next()` call is processed _down_ the middleware chain
+- Code reached _after_ the `await next()` call is processed _up_ the middleware chain
+- In case of errors, the middleware should `throw` an error, not return a rejected promise
 
-## Scripts
+## Convention
 
-* `yarn build` or `npm run build` - produces production version of your library under the `lib` folder
-* `yarn dev` or `npm run dev` - produces development version of your library and runs a watcher
-* `yarn test` or `npm run test` - well ... it runs the tests :)
-* `yarn test:watch` or `npm run test:watch` - same as above but in a watch mode
+- All properties to be added or modified along the middleware chain should be added/modified on the `ctx.event` object
+- For HTTP based calls, the top chain will expect a `ctx.event.response` property to be populated
+- Errors thrown follow the pattern: `{message: '...', code: 42}`
 
-## Readings
+## Utility middlewares
 
-* [Start your own JavaScript library using webpack and ES6](http://krasimirtsonev.com/blog/article/javascript-library-starter-using-webpack-es6)
+In case of utility middlewares, that are expected to be used both as normal functions and as part of a middleware chain:
 
-## Misc
+- the `next` parameter should be made optional (`next?`)
+- the call to `next` should be made optional with the statement `next && await next()`
 
-### An example of using dependencies that shouldn’t be resolved by webpack, but should become dependencies of the resulting bundle
+E.g. `withUserId` can be used as a part of a chain, when user isn't needed (only id) but it is also used within `withUser` as normal function
 
-In the following example we are excluding React and Lodash:
+## Base middlewares
 
-```js
-{
-  devtool: 'source-map',
-  output: {
-    path: '...',
-    libraryTarget: 'umd',
-    library: '...'
-  },
-  entry: '...',
-  ...
-  externals: {
-    react: 'react'
-    // Use more complicated mapping for lodash.
-    // We need to access it differently depending
-    // on the environment.
-    lodash: {
-      commonjs: 'lodash',
-      commonjs2: 'lodash',
-      amd: '_',
-      root: '_'
-    }
-  }
-}
-```
+↓ means acts _down_ the chain; ↑ _up_ the chain
+
+### callbackBased & contextBased ↑
+
+Decide how the outcome of the Lambda function is triggered. Http calls use callback, whereas Cognito triggers use context for example. As of this writing, one of the two **must** be used as the top middleware for any *handler* function
+
+### httpResponse & standardHttpResponse ↑
+
+Handles Http responses, both success and error. `standardHttpResponse` simply uses a default code 200 for success, as well as default CORS enabled and JSON content.
+
+### withUserId ↓
+
+Reads the user Id from the request and adds it as `ctx.event.userId`
+
+### withUser ↓
+
+Reads the user Id and loads the corresponding user object. Adds the user as `ctx.event.user`  
+*Note:* Does not require `withUserId` to be added to the chain as it is already part of the code of withUser. 
+
+### jsonBody ↓
+
+JSON-Parses the body of a POST. Sets the parsed object back onto `ctx.event.body` (overwrites original)
+
