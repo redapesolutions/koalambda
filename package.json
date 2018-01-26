@@ -44,6 +44,7 @@
   },
   "dependencies": {
     "@types/aws-lambda": "0.0.30",
+    "chai-as-promised": "^7.1.1",
     "koa-compose": "^4.0.0",
     "lodash": "^4.17.4",
     "ts-loader": "^3.3.1",

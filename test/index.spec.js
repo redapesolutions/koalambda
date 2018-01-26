@@ -7,7 +7,7 @@ describe('Middleware framework', () => {
     it('returns a function', () => {
       expect(kompose((c) => Promise.resolve('x'))).to.be.a('Function')
     })
-    it('combines lambda s event and context into a single argument', (done) => {
+    it('combines lambda s event and context into a single argument', () => {
       const a = {msg: 'I am "a"'}, b = {msg: 'I am "b"'}
       const fn = kompose(
         (arg) => {
@@ -16,8 +16,11 @@ describe('Middleware framework', () => {
           return Promise.resolve(0)
         }
       )
-      fn(a,b).then(done)
+      return fn(a,b)
     })
+    it('only accepts functions', () => {
+      expect(() => kompose(42)).to.throw()
+    }),
     describe('Expected behavior follows Koa', () => {
       it('follows the path of the functions', (done) => {
         kompose(
