@@ -1,0 +1,2 @@
+export {kompose} from './kompose'
+
