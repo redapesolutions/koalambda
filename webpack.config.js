@@ -21,7 +21,7 @@ const config = {
   devtool: 'source-map',
   output: {
     path: __dirname + '/lib',
-    filename: outputFile,
+    filename: 'index.js',
     library: libraryName,
     libraryTarget: 'umd',
     umdNamedDefine: true
@@ -46,7 +46,7 @@ const config = {
   },
   resolve: {
     modules: [path.resolve('./node_modules'), path.resolve('./src')],
-    extensions: ['.json', '.js']
+    extensions: ['.json', '.js', '.ts']
   },
   plugins: plugins
 };
