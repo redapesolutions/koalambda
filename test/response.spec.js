@@ -8,15 +8,15 @@ describe('Fixed response body', () => {
   })
   it('should set a clone of the value onto the response', async () => {
     const toRespond = {a:42}
-    const ctx = {event:{}}
+    const ctx = {state:{}}
     await fixedResponseBody(toRespond)(ctx, noop)
-    expect(ctx.event).to.have.property('response').which.not.equal(toRespond)
-    expect(ctx.event['response']).to.eql(toRespond)
+    expect(ctx.state).to.have.property('response').which.not.equal(toRespond)
+    expect(ctx.state['response']).to.eql(toRespond)
   })
   it('should set the value onto the response if no clone is specified', async () => {
     const toRespond = {a:42}
-    const ctx = {event:{}}
+    const ctx = {state:{}}
     await fixedResponseBody(toRespond, false)(ctx, noop)
-    expect(ctx.event).to.have.property('response').which.equal(toRespond)
+    expect(ctx.state).to.have.property('response').which.equal(toRespond)
   })
 })

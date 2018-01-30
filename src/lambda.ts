@@ -7,7 +7,7 @@ export const doNotWaitForBgProcessesToFinish = async (ctx, next) => {
 export const anyBased = async (next, cb, ctx) => {
   try {
     await next()
-    cb(null, ctx.event.response)
+    cb(null, ctx.state.response)
   } catch (e) {
     cb(e)
   }

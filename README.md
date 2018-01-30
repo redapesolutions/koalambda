@@ -26,7 +26,7 @@ export const handler = kompose(
 A middleware follows the following rules:
 
 - arguments are `ctx:EventContext` and `next` (optional, see Utility middlewares below)
-- `ctx` contains two properties: `event:AWSEvent` and `context:AWSContext`. The event type varies depending on the trigger of the lambda function.
+- `ctx` contains three properties: `event:AWSEvent`, `context:AWSContext` and `state`. The event type varies depending on the trigger of the lambda function.
 - All middlewares should be `async` functions; they should always call `await next()` (or `next && await next()` in the case of utility)
 - Code reached _before_ the `await next()` call is processed _down_ the middleware chain
 - Code reached _after_ the `await next()` call is processed _up_ the middleware chain
@@ -34,8 +34,8 @@ A middleware follows the following rules:
 
 ## Convention
 
-- All properties to be added or modified along the middleware chain should be added/modified on the `ctx.event` object
-- For HTTP based calls, the top chain will expect a `ctx.event.response` property to be populated
+- All properties to be added or modified along the middleware chain should be added/modified on the `ctx.state` object
+- For HTTP based calls, the top chain will expect a `ctx.state.response` property to be populated
 - Errors thrown follow the pattern: `{message: '...', code: 42}`
 
 ## Utility middlewares
@@ -61,14 +61,20 @@ Handles Http responses, both success and error. `standardHttpResponse` simply us
 
 ### withUserId ↓
 
-Reads the user Id from the request and adds it as `ctx.event.userId`
+Reads the user Id from the request and adds it as `ctx.state.userId`
 
 ### withUser ↓
 
-Reads the user Id and loads the corresponding user object. Adds the user as `ctx.event.user`  
+Reads the user Id and loads the corresponding user object. Adds the user as `ctx.state.user`  
 *Note:* Does not require `withUserId` to be added to the chain as it is already part of the code of withUser. 
 
 ### jsonBody ↓
 
-JSON-Parses the body of a POST. Sets the parsed object back onto `ctx.event.body` (overwrites original)
+JSON-Parses the body of a POST. Sets the parsed object back onto `ctx.state.body` (overwrites original)
 
+## Changelog
+
+### v0.0.2:
+
+- move all properties to state
+- move `koa-compose` initialisation higher to avoid checking functions twice (thank you @yujilim)
