@@ -26,7 +26,7 @@ describe('Context middleware', () => {
     return kompose(
       contextBased,
       async (ctx, next) => {
-        ctx.event.response = resp
+        ctx.state.response = resp
         await next()
       }
     )(event, context)
@@ -78,7 +78,7 @@ describe('Callback middleware', () => {
     return kompose(
       callbackBased,
       async (ctx, next) => {
-        ctx.event.response = resp
+        ctx.state.response = resp
         await next()
       }
     )(event, context, cb)

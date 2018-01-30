@@ -14,10 +14,11 @@ describe('jsonBody middleware', () => {
     const ctx = {
       event: {
         body: JSON.stringify({a:42})
-      }
+      },
+      state: {}
     }
     await jsonBody(ctx, noop)
-    expect(ctx.event.body).to.be.an('Object').which.has.property('a')
+    expect(ctx.state.body).to.be.an('Object').which.has.property('a')
   })
   it('should raise if body is not valid JSON', async () => {
     const ctx = {
@@ -55,7 +56,7 @@ describe('Http response middleware', () => {
       callbackBased,
       standardHttpResponse,
       async (ctx, next) => {
-        ctx.event.response = whatToReply
+        ctx.state.response = whatToReply
         await next()
       }
     )(event, context, cb)

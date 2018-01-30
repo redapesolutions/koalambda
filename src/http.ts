@@ -17,7 +17,7 @@ export const jsonBody = async (ctx, next?) => {
   } catch (ex) {
       throw {message: `Failed to parse body: ${ex}`, code: ERROR_CODES.JSON_PARSING_ERROR}
   }
-  ctx.event.body = body
+  ctx.state.body = body
   next && await next()
 }
 
@@ -39,7 +39,6 @@ export const _makeResponse = (body: {[prop:string]: any}, statusCode = 200, cors
 }
 
 export const _callbackBasedHttpHandleError = err => {
-  console.log('Error: ', err)
   let message: string, code: number = 400, internalCode: number = 0
 
   if (isArray(err)) {
@@ -61,7 +60,7 @@ export const _callbackBasedHttpHandleError = err => {
 
 export const makeResponse = (statusCode = 200, cors = true, headers: {[prop:string]: any} = {}) => async (ctx, next) => {
   await next()
-  ctx.event.response = _makeResponse(ctx.event.response, statusCode, cors, headers)
+  ctx.state.response = _makeResponse(ctx.state.response, statusCode, cors, headers)
 }
 
 
@@ -77,9 +76,9 @@ export const makeSuccess = makeResponse()
 export const httpResponse = (successCode = 200, errorCode = 400, cors = true, headers: {[prop:string]: any} = {}) => async (ctx, next) => {
   try {
     await next()
-    ctx.event.response = _makeResponse(ctx.event.response, ctx.event.response.statusCode || successCode, cors, headers)
+    ctx.state.response = _makeResponse(ctx.state.response, ctx.state.response.statusCode || successCode, cors, headers)
   } catch (e) {
-    ctx.event.response = _callbackBasedHttpHandleError(e)
+    ctx.state.response = _callbackBasedHttpHandleError(e)
   }
 }
 
