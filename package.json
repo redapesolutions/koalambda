@@ -40,7 +40,10 @@
     "chai": "^4.1.2",
     "eslint": "^4.13.1",
     "eslint-loader": "^1.9.0",
+    "eslint-plugin-typescript": "^0.8.1",
     "mocha": "^4.0.1",
+    "standard": "^10.0.3",
+    "typescript-eslint-parser": "^12.0.0",
     "webpack": "^3.10.0",
     "yargs": "^10.0.3"
   },
@@ -52,5 +55,11 @@
     "sinon": "^4.2.1",
     "ts-loader": "^3.3.1",
     "typescript": "^2.6.2"
+  },
+  "standard": {
+    "parser": "typescript-eslint-parser",
+    "plugins": [
+      "typescript"
+    ]
   }
 }
