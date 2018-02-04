@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "Koa-like middleware framework to build AWS Lambda functions",
   "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
     "build": "webpack --env dev && webpack --env build && npm run test",
     "dev": "webpack --progress --colors --watch --env dev",
@@ -54,7 +55,8 @@
     "lodash": "^4.17.4",
     "sinon": "^4.2.1",
     "ts-loader": "^3.3.1",
-    "typescript": "^2.6.2"
+    "typescript": "^2.6.2",
+    "uglifyjs-webpack-plugin": "^1.1.8"
   },
   "standard": {
     "parser": "typescript-eslint-parser",

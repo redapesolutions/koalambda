@@ -3,6 +3,7 @@
   "compilerOptions": {
     "sourceMap": true,
     "target": "es2015",
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "declaration": true
   }
 }
