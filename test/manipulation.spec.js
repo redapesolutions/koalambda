@@ -2,6 +2,8 @@ import {
   kompose,
   mapPropertyDown,
   mapPropertyUp,
+  putInState,
+  filter
 } from '../lib'
 import { expect } from 'chai'
 import noop from 'lodash/noop'
@@ -81,6 +83,86 @@ describe('mapProperty middlewares', () => {
           expect(ctx.state).to.not.have.property('B')
           await next()
           expect(ctx.state).to.not.have.property('B')
+        }
+      )(ctx, noop)
+    })
+  })
+  describe('putInState middleware', () => {
+    it('should take the property from event and put in state', async () => {
+      const ctx = {
+        event: {
+          A: 42
+        },
+        state: {}
+      }
+
+      console.log(putInState)
+
+      await kompose(
+        async (ctx, next) => {
+          expect(ctx.state).to.not.have.property('A')
+          await next()
+          expect(ctx.state).to.have.property('A')
+        },
+        putInState('A'),
+        async (ctx, next) => {
+          expect(ctx.state).to.have.property('A')
+          await next()
+          expect(ctx.state).to.have.property('A')
+        }
+      )(ctx, noop)
+    })
+    it('should create objects and undefined at the end', async () => {
+      const ctx = {
+        event: {},
+        state: {}
+      }
+
+      console.log(putInState)
+
+      await kompose(
+        async (ctx, next) => {
+          expect(ctx.state).to.not.have.property('A')
+          await next()
+          expect(ctx.state).to.have.property('A')
+          expect(ctx.state.A).to.have.property('B')
+          expect(ctx.state.A.B.C).to.equal(undefined)
+        },
+        putInState('A.B.C'),
+        async (ctx, next) => {
+          expect(ctx.state).to.have.property('A')
+          expect(ctx.state.A).to.have.property('B')
+          expect(ctx.state.A.B.C).to.equal(undefined)
+          await next()
+          expect(ctx.state).to.have.property('A')
+          expect(ctx.state.A).to.have.property('B')
+          expect(ctx.state.A.B.C).to.equal(undefined)
+        }
+      )(ctx, noop)
+    })
+  })
+  describe('filter middleware', () => {
+    it('should take the property from event and put in state', async () => {
+      const ctx = {
+        event: {
+          
+        },
+        state: {A: [1,2,3,4,5]}
+      }
+
+      console.log(putInState)
+
+      await kompose(
+        async (ctx, next) => {
+          expect(ctx.state.A.length).to.be.equal(5)
+          await next()
+          expect(ctx.state.A.length).to.be.equal(3)
+        },
+        filter('A', n => n <= 3),
+        async (ctx, next) => {
+          expect(ctx.state.A.length).to.be.equal(3)
+          await next()
+          expect(ctx.state.A.length).to.be.equal(3)
         }
       )(ctx, noop)
     })
