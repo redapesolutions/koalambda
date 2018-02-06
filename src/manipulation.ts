@@ -22,7 +22,7 @@ export const putEventToState = (variableName: string) => {
   }
 }
 
-export const filterEventProperty = (variableName: string, filterFunction: (record) => boolean) => {
+export const filterProperty = (variableName: string, filterFunction: (record) => boolean) => {
   return async (ctx, next?) => {
       let array: any[] = get(ctx.state, `${variableName}`)
 

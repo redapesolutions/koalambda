@@ -3,7 +3,7 @@ import {
   mapPropertyDown,
   mapPropertyUp,
   putEventToState,
-  filterEventProperty
+  filterProperty
 } from '../lib'
 import { expect } from 'chai'
 import noop from 'lodash/noop'
@@ -150,7 +150,7 @@ describe('mapProperty middlewares', () => {
           await next()
           expect(ctx.state.A.length).to.be.equal(3)
         },
-        filterEventProperty('A', n => n <= 3),
+        filterProperty('A', n => n <= 3),
         async (ctx, next) => {
           expect(ctx.state.A.length).to.be.equal(3)
           await next()
@@ -166,7 +166,7 @@ describe('mapProperty middlewares', () => {
       try{
         await kompose(
           putEventToState('A'),
-            filterEventProperty('A', n => n <= 3)
+          filterProperty('A', n => n <= 3)
           )(event, noop)
       } 
       catch (ex){
