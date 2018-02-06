@@ -2,8 +2,8 @@ import {
   kompose,
   mapPropertyDown,
   mapPropertyUp,
-  putInState,
-  filter
+  putEventToState,
+  filterEventProperty
 } from '../lib'
 import { expect } from 'chai'
 import noop from 'lodash/noop'
@@ -96,15 +96,13 @@ describe('mapProperty middlewares', () => {
         state: {}
       }
 
-      console.log(putInState('A'))
-
       await kompose(
         async (ctx, next) => {
           expect(ctx.state).to.not.have.property('A')
           await next()
           expect(ctx.state).to.have.property('A')
         },
-        putInState('A'),
+        putEventToState('A'),
         async (ctx, next) => {
           expect(ctx.state).to.have.property('A')
           await next()
@@ -118,8 +116,6 @@ describe('mapProperty middlewares', () => {
         state: {}
       }
 
-      console.log(putInState)
-
       await kompose(
         async (ctx, next) => {
           expect(ctx.state).to.not.have.property('A')
@@ -128,7 +124,7 @@ describe('mapProperty middlewares', () => {
           expect(ctx.state.A).to.have.property('B')
           expect(ctx.state.A.B.C).to.equal(undefined)
         },
-        putInState('A.B.C'),
+        putEventToState('A.B.C'),
         async (ctx, next) => {
           expect(ctx.state).to.have.property('A')
           expect(ctx.state.A).to.have.property('B')
@@ -148,13 +144,13 @@ describe('mapProperty middlewares', () => {
       }
 
       await kompose(
-        putInState('A'),
+        putEventToState('A'),
         async (ctx, next) => {
           expect(ctx.state.A.length).to.be.equal(5)
           await next()
           expect(ctx.state.A.length).to.be.equal(3)
         },
-        filter('A', n => n <= 3),
+        filterEventProperty('A', n => n <= 3),
         async (ctx, next) => {
           expect(ctx.state.A.length).to.be.equal(3)
           await next()
@@ -169,8 +165,8 @@ describe('mapProperty middlewares', () => {
 
       try{
         await kompose(
-            putInState('A'),
-            filter('A', n => n <= 3)
+          putEventToState('A'),
+            filterEventProperty('A', n => n <= 3)
           )(event, noop)
       } 
       catch (ex){

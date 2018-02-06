@@ -12,7 +12,7 @@ export const mapPropertyUp = (source: string, target: string, defaultValue?: any
   ctx.state[target] = get(ctx.state, source, defaultValue || null)
 }
 
-export const putInState = (variableName: string) => {
+export const putEventToState = (variableName: string) => {
   return async (ctx, next?) => {
       let value = get(ctx.event, `${variableName}`)
 
@@ -22,7 +22,7 @@ export const putInState = (variableName: string) => {
   }
 }
 
-export const filter = (variableName: string, filterFunction: (record) => boolean) => {
+export const filterEventProperty = (variableName: string, filterFunction: (record) => boolean) => {
   return async (ctx, next?) => {
       let array: any[] = get(ctx.state, `${variableName}`)
 
