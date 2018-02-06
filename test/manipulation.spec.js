@@ -96,7 +96,7 @@ describe('mapProperty middlewares', () => {
         state: {}
       }
 
-      console.log(putInState)
+      console.log(putInState('A'))
 
       await kompose(
         async (ctx, next) => {
@@ -142,17 +142,13 @@ describe('mapProperty middlewares', () => {
     })
   })
   describe('filter middleware', () => {
-    it('should take the property from event and put in state', async () => {
-      const ctx = {
-        event: {
-          
-        },
-        state: {A: [1,2,3,4,5]}
+    it('should filter the values', async () => {
+      const event = {
+        A: [1,2,3,4,5]
       }
 
-      console.log(putInState)
-
       await kompose(
+        putInState('A'),
         async (ctx, next) => {
           expect(ctx.state.A.length).to.be.equal(5)
           await next()
@@ -164,7 +160,25 @@ describe('mapProperty middlewares', () => {
           await next()
           expect(ctx.state.A.length).to.be.equal(3)
         }
-      )(ctx, noop)
+      )(event, noop)
+    })
+    it('Should throw if not array', async () => {
+      const event = {
+        A: ""
+      }
+
+      try{
+        await kompose(
+            putInState('A'),
+            filter('A', n => n <= 3)
+          )(event, noop)
+      } 
+      catch (ex){
+        return Promise.resolve('OK')
+      }
+
+      return Promise.reject('Should throw')
+      
     })
   })
 })

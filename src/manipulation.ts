@@ -12,7 +12,7 @@ export const mapPropertyUp = (source: string, target: string, defaultValue?: any
   ctx.state[target] = get(ctx.state, source, defaultValue || null)
 }
 
-export const putInState = async (variableName: string) => {
+export const putInState = (variableName: string) => {
   return async (ctx, next?) => {
       let value = get(ctx.event, `${variableName}`)
 
@@ -22,14 +22,14 @@ export const putInState = async (variableName: string) => {
   }
 }
 
-export const filter = async (variableName: string, compareFunction: (record) => boolean) => {
+export const filter = (variableName: string, filterFunction: (record) => boolean) => {
   return async (ctx, next?) => {
       let array: any[] = get(ctx.state, `${variableName}`)
 
       if(!isArray(array))
           throw Error('Variable should be an array')
 
-      set(ctx.state, `${variableName}`, array.filter(compareFunction))
+      set(ctx.state, `${variableName}`, array.filter(filterFunction))
 
       next && await next()
   }
