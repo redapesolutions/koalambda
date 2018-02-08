@@ -9,7 +9,7 @@ Middlewares
 Use Koa style middlewares and the `kompose` method. Examples can be found in handlers e.g. `user/addToHistory.ts`  
 A handler is therefore simply equal to the outcome of `kompose` e.g.
 
-```
+```js
 export const handler = kompose(
     callbackBased,
     ...,
