@@ -1,4 +1,5 @@
-# Koala-mbda or Koa-Lambda
+# Koala-mbda or Koa-Lambda [![Build Status](https://travis-ci.org/redapesolutions/koalambda.svg?branch=master)](https://travis-ci.org/redapesolutions/koalambda) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
+
 
 Koa-style middleware concept to quickly build AWS Lambda functions
 
@@ -66,7 +67,7 @@ Reads the user Id from the request and adds it as `ctx.state.userId`
 ### withUser ↓
 
 Reads the user Id and loads the corresponding user object. Adds the user as `ctx.state.user`  
-*Note:* Does not require `withUserId` to be added to the chain as it is already part of the code of withUser. 
+*Note:* Does not require `withUserId` to be added to the chain as it is already part of the code of withUser.
 
 ### jsonBody ↓
 
