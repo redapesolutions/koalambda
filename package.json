@@ -1,6 +1,6 @@
 {
   "name": "koalambda",
-  "version": "0.1.3",
+  "version": "0.1.5",
   "description": "Koa-like middleware framework to build AWS Lambda functions",
   "main": "lib/index.js",
   "types": "lib/src/index.d.ts",

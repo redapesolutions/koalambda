@@ -73,6 +73,14 @@ Reads the user Id and loads the corresponding user object. Adds the user as `ctx
 
 JSON-Parses the body of a POST. Sets the parsed object back onto `ctx.state.body` (overwrites original)
 
+### putInState ↓
+
+Takes value with specified name and puts it in the state 
+
+### filter ↓
+
+filter the specified argument by specified function 
+
 ## Changelog
 
 ### v0.0.2:
