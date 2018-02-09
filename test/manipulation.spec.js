@@ -180,43 +180,43 @@ describe('mapProperty middlewares', () => {
 
     })
   })
-  describe('putEnvVariableInState middleware', () => {
-    it('should put to the same path', async () => {
-      process.env.Test = '1'
+})
+describe('putEnvVariableInState middleware', () => {
+  it('should put to the same path', async () => {
+    process.env.Test = '1'
 
-      await kompose(
-        async (ctx, next) => {
-          expect(ctx.state).to.not.have.property('Test')
-          await next()
-          expect(ctx.state.Test).to.be.equal('1')
-        },
-        putEnvVariableToState('Test'),
-        async (ctx, next) => {
-          expect(ctx.state.Test).to.be.equal('1')
-          await next()
-          expect(ctx.state.Test).to.be.equal('1')
-        }
-      )({}, noop)
-    })
-    it('should put to the specified path', async () => {
-      process.env.Test = '1'
+    await kompose(
+      async (ctx, next) => {
+        expect(ctx.state).to.not.have.property('Test')
+        await next()
+        expect(ctx.state.Test).to.be.equal('1')
+      },
+      putEnvVariableToState('Test'),
+      async (ctx, next) => {
+        expect(ctx.state.Test).to.be.equal('1')
+        await next()
+        expect(ctx.state.Test).to.be.equal('1')
+      }
+    )({}, noop)
+  })
+  it('should put to the specified path', async () => {
+    process.env.Test = '1'
 
-      await kompose(
-        async (ctx, next) => {
-          expect(ctx.state).to.not.have.property('Test')
-          await next()
-          expect(ctx.state).to.not.have.property('Test')
-          expect(ctx.state.i.like.pancakes).to.be.equal('1')
-        },
-        putEnvVariableToState('Test', 'i.like.pancakes'),
-        async (ctx, next) => {
-          expect(ctx.state).to.not.have.property('Test')
-          expect(ctx.state.i.like.pancakes).to.be.equal('1')
-          await next()
-          expect(ctx.state).to.not.have.property('Test')
-          expect(ctx.state.i.like.pancakes).to.be.equal('1')
-        }
-      )({}, noop)
-    })
+    await kompose(
+      async (ctx, next) => {
+        expect(ctx.state).to.not.have.property('Test')
+        await next()
+        expect(ctx.state).to.not.have.property('Test')
+        expect(ctx.state.i.like.pancakes).to.be.equal('1')
+      },
+      putEnvVariableToState('Test', 'i.like.pancakes'),
+      async (ctx, next) => {
+        expect(ctx.state).to.not.have.property('Test')
+        expect(ctx.state.i.like.pancakes).to.be.equal('1')
+        await next()
+        expect(ctx.state).to.not.have.property('Test')
+        expect(ctx.state.i.like.pancakes).to.be.equal('1')
+      }
+    )({}, noop)
   })
 })
