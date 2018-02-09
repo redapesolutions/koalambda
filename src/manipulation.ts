@@ -1,3 +1,4 @@
+import * as process from 'process'
 import get from 'lodash/get'
 import set from 'lodash/set'
 import isArray from 'lodash/isArray';
@@ -35,6 +36,22 @@ export const filterProperty = (variableName: string, filterFunction: (record) =>
           throw Error('Variable should be an array')
 
       set(ctx.state, `${variableName}`, array.filter(filterFunction))
+
+      next && await next()
+  }
+}
+
+export const putEnvVariableToState = (envVariableName: string, variableStatePath?: string) => {
+  return async (ctx, next?) => {
+      //This process env is empty i do not know why
+      const envValue = process.env[envVariableName]
+
+      let where = envVariableName
+
+      if (variableStatePath)
+          where = variableStatePath
+
+      set(ctx.state, where, envValue)
 
       next && await next()
   }

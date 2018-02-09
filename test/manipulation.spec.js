@@ -3,10 +3,13 @@ import {
   mapPropertyDown,
   mapPropertyUp,
   putEventToState,
-  filterProperty
+  filterProperty,
+  putEnvVariableToState
 } from '../lib'
 import { expect } from 'chai'
 import noop from 'lodash/noop'
+import * as process from 'process'
+import set from 'lodash/set'
 
 describe('mapProperty middlewares', () => {
   it('should return a middleware', () => {
@@ -140,7 +143,7 @@ describe('mapProperty middlewares', () => {
   describe('filter middleware', () => {
     it('should filter the values', async () => {
       const event = {
-        A: [1,2,3,4,5]
+        A: [1, 2, 3, 4, 5]
       }
 
       await kompose(
@@ -163,18 +166,57 @@ describe('mapProperty middlewares', () => {
         A: ""
       }
 
-      try{
+      try {
         await kompose(
           putEventToState('A'),
           filterProperty('A', n => n <= 3)
-          )(event, noop)
-      } 
-      catch (ex){
+        )(event, noop)
+      }
+      catch (ex) {
         return Promise.resolve('OK')
       }
 
       return Promise.reject('Should throw')
-      
+
+    })
+  })
+  describe('putEnvVariableInState middleware', () => {
+    it('should put to the same path', async () => {
+      process.env.Test = '1'
+
+      await kompose(
+        async (ctx, next) => {
+          expect(ctx.state).to.not.have.property('Test')
+          await next()
+          expect(ctx.state.Test).to.be.equal('1')
+        },
+        putEnvVariableToState('Test'),
+        async (ctx, next) => {
+          expect(ctx.state.Test).to.be.equal('1')
+          await next()
+          expect(ctx.state.Test).to.be.equal('1')
+        }
+      )({}, noop)
+    })
+    it('should put to the specified path', async () => {
+      process.env.Test = '1'
+
+      await kompose(
+        async (ctx, next) => {
+          expect(ctx.state).to.not.have.property('Test')
+          await next()
+          expect(ctx.state).to.not.have.property('Test')
+          expect(ctx.state.i.like.pancakes).to.be.equal('1')
+        },
+        putEnvVariableToState('Test', 'i.like.pancakes'),
+        async (ctx, next) => {
+          expect(ctx.state).to.not.have.property('Test')
+          expect(ctx.state.i.like.pancakes).to.be.equal('1')
+          await next()
+          expect(ctx.state).to.not.have.property('Test')
+          expect(ctx.state.i.like.pancakes).to.be.equal('1')
+        }
+      )({}, noop)
     })
   })
 })
