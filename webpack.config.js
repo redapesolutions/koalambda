@@ -19,6 +19,7 @@ if (env === 'build') {
 const config = {
   entry: __dirname + '/src/index.ts',
   devtool: 'source-map',
+  target: 'node',
   output: {
     path: __dirname + '/lib',
     filename: 'index.js',
@@ -26,6 +27,7 @@ const config = {
     libraryTarget: 'umd',
     umdNamedDefine: true
   },
+  target: 'node',
   module: {
     rules: [
       {
