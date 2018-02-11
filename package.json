@@ -5,8 +5,9 @@
   "main": "lib/index.js",
   "types": "lib/src/index.d.ts",
   "scripts": {
-    "build": "webpack --env dev && webpack --env build && npm run test",
+    "build": "webpack --env dev && webpack --env build",
     "dev": "webpack --progress --colors --watch --env dev",
+    "pretest": "npm run build",
     "test": "mocha --require babel-core/register --colors ./test/*.spec.js",
     "test:watch": "mocha --require babel-core/register --colors -w ./test/*.spec.js",
     "postversion": "git push && git push --tags",
