@@ -19,8 +19,8 @@ describe('mapProperty middlewares', () => {
         A: 'abc'
       }
     }
-    await mapPropertyDown('A', 'B')(ctx, noop)
-    expect(ctx.state).to.have.property('B').which.equals('abc')
+    await mapPropertyDown('A', 'B.C')(ctx, noop)
+    expect(ctx.state.B).to.have.property('C').which.equals('abc')
     // reset
     ctx = {
       state: {
@@ -28,8 +28,8 @@ describe('mapProperty middlewares', () => {
       }
     }
     expect(ctx.state).to.not.have.property('B')
-    await mapPropertyUp('A', 'B')(ctx, noop)
-    expect(ctx.state).to.have.property('B').which.equals('abc')
+    await mapPropertyUp('A', 'B.C')(ctx, noop)
+    expect(ctx.state.B).to.have.property('C').which.equals('abc')
   })
   it('should set value to default if provided and no property is found', async () => {
     const ctx = {
@@ -37,8 +37,8 @@ describe('mapProperty middlewares', () => {
         D: 'abc'
       }
     }
-    await mapPropertyDown('A', 'B', 42)(ctx, noop)
-    expect(ctx.state).to.have.property('B').which.equals(42)
+    await mapPropertyDown('A', 'B.C', 42)(ctx, noop)
+    expect(ctx.state.B).to.have.property('C').which.equals(42)
   })
   it('should set to null if no default and no property', async () => {
     const ctx = {

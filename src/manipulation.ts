@@ -3,13 +3,18 @@ import set from 'lodash/set'
 import isArray from 'lodash/isArray';
 
 export const mapPropertyDown = (source: string, target: string, defaultValue?: any) => async (ctx, next?) => {
-  ctx.state[target] = get(ctx.state, source, defaultValue || null)
+  let value = get(ctx.state, source, defaultValue || null)
+
+  set(ctx.state, target, value)
+
   next && await next()
 }
 
 export const mapPropertyUp = (source: string, target: string, defaultValue?: any) => async (ctx, next?) => {
   next && await next()
-  ctx.state[target] = get(ctx.state, source, defaultValue || null)
+  let value = get(ctx.state, source, defaultValue || null)
+
+  set(ctx.state, target, value)  
 }
 
 export const putEventToState = (variableName: string) => {
