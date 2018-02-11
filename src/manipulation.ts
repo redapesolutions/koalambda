@@ -56,3 +56,16 @@ export const putEnvVariableToState = (envVariableName: string, variableStatePath
       next && await next()
   }
 }
+
+export const tryGetValueInOrder = (checkFn: (ctx) => boolean, ...functions) => {
+  return async (ctx, next?) => {
+      for(let fun of functions){
+          await fun(ctx)
+
+          if(await checkFn(ctx)){
+              next && await next()
+              return
+          }
+      }     
+  }
+}

@@ -4,7 +4,9 @@ import {
   mapPropertyUp,
   putEventToState,
   filterProperty,
-  putEnvVariableToState
+  putEnvVariableToState,
+  tryGetValueInOrder,
+  callbackBased
 } from '../lib'
 import { expect } from 'chai'
 import noop from 'lodash/noop'
@@ -218,5 +220,51 @@ describe('putEnvVariableInState middleware', () => {
         expect(ctx.state.i.like.pancakes).to.be.equal('1')
       }
     )({}, noop)
+  })
+})
+
+describe('tryGetValueInOrder', () => {
+  it('should take first value', async () => {
+    let context = {
+      state: { test: 0 }
+    }
+
+    let preparedTryGet = await tryGetValueInOrder(
+      (ctx) => ctx.state.test === 2,
+
+      async (ctx) => { 
+        ctx.state.test = 1
+      },
+      async (ctx) => { 
+        ctx.state.test = 2
+      },
+      async (ctx) => { 
+        ctx.state.test = 3
+      }
+    )
+
+    kompose(
+      async (ctx, next) => {
+        ctx.state = context.state
+        await next()
+      },
+      async (ctx, next) => {
+        expect(ctx.state.test).to.equal(0)
+
+        await next()
+
+        expect(ctx.state.test).to.equal(2)
+        
+      },
+      preparedTryGet,
+      async (ctx, next) => {
+        expect(ctx.state.test).to.equal(2)
+
+        await next()
+
+        expect(ctx.state.test).to.equal(2)
+        
+      },
+    )({}, {})
   })
 })
