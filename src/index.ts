@@ -4,3 +4,4 @@ export {jsonBody, ERROR_CODES as HTTP_ERROR_CODES, standardHttpResponse} from '.
 export * from './lambda'
 export * from './response'
 export * from './manipulation'
+export * from './parameters'
