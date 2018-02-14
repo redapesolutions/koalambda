@@ -1,4 +1,4 @@
-# Koala-mbda or Koa-Lambda [![Build Status](https://travis-ci.org/redapesolutions/koalambda.svg?branch=master)](https://travis-ci.org/redapesolutions/koalambda) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
+# Koala-mbda or Koa-Lambda [![Build Status](https://travis-ci.org/redapesolutions/koalambda.svg?branch=master)](https://travis-ci.org/redapesolutions/koalambda) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com) [![Coverage Status](https://coveralls.io/repos/github/redapesolutions/koalambda/badge.svg?branch=master)](https://coveralls.io/github/redapesolutions/koalambda?branch=master)
 
 
 Koa-style middleware concept to quickly build AWS Lambda functions
@@ -75,11 +75,11 @@ JSON-Parses the body of a POST. Sets the parsed object back onto `ctx.state.body
 
 ### putInState ↓
 
-Takes value with specified name and puts it in the state 
+Takes value with specified name and puts it in the state
 
 ### filter ↓
 
-filter the specified argument by specified function 
+filter the specified argument by specified function
 
 ## Changelog
 

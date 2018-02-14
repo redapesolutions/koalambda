@@ -8,10 +8,11 @@
     "build": "webpack --env dev && webpack --env build",
     "dev": "webpack --progress --colors --watch --env dev",
     "pretest": "npm run build",
-    "test": "mocha --require babel-core/register --colors ./test/*.spec.js",
+    "test": "nyc mocha --require babel-core/register --colors ./test/*.spec.js",
     "test:watch": "mocha --require babel-core/register --colors -w ./test/*.spec.js",
     "postversion": "git push && git push --tags",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "coverage": "nyc report --reporter=text-lcov | coveralls"
   },
   "repository": {
     "type": "git",
@@ -41,10 +42,12 @@
     "babel-plugin-add-module-exports": "^0.2.1",
     "babel-preset-env": "^1.6.1",
     "chai": "^4.1.2",
+    "coveralls": "^3.0.0",
     "eslint": "^4.13.1",
     "eslint-loader": "^1.9.0",
     "eslint-plugin-typescript": "^0.8.1",
     "mocha": "^4.0.1",
+    "nyc": "^11.4.1",
     "standard": "^10.0.3",
     "typescript-eslint-parser": "^12.0.0",
     "webpack": "^3.10.0",
