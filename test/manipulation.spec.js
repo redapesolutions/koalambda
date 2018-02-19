@@ -5,12 +5,17 @@ import {
   putEventToState,
   filterProperty,
   putEnvVariableToState,
-  executeInOrder
+  executeInOrder,
+  paginateResponse
 } from '../lib'
-import { expect } from 'chai'
+import {
+  expect
+} from 'chai'
 import noop from 'lodash/noop'
 import * as process from 'process'
 import set from 'lodash/set'
+import isArray from 'lodash/isArray'
+
 describe('Manipulation', () => {
   describe('mapProperty middlewares', () => {
     it('should return a middleware', () => {
@@ -173,8 +178,7 @@ describe('Manipulation', () => {
           putEventToState('A'),
           filterProperty('A', n => n <= 3)
         )(event, noop)
-      }
-      catch (ex) {
+      } catch (ex) {
         return Promise.resolve('OK')
       }
 
@@ -225,7 +229,9 @@ describe('Manipulation', () => {
   describe('exeuteInOrder', () => {
     it('should take second value', async () => {
       let context = {
-        state: { test: 0 }
+        state: {
+          test: 0
+        }
       }
 
       let preparedExecuteInOrder = await executeInOrder(
@@ -265,6 +271,301 @@ describe('Manipulation', () => {
 
         },
       )({}, {})
+    })
+    it('should throw if stop condition is not a function', async () => {
+      let context = {
+        state: {
+          test: 0
+        }
+      }
+      try {
+        await executeInOrder(
+          'Not a function',
+
+          async (ctx) => {
+            ctx.state.test = 1
+          },
+          async (ctx) => {
+            ctx.state.test = 2
+          },
+          async (ctx) => {
+            ctx.state.test = 3
+          }
+        )(context, () => {})
+        return Promise.reject('Should throw')
+      } catch (ex) {
+        expect(ex).be.instanceof(Error)
+      }
+    })
+  })
+  describe('paginateResponse', () => {
+    it('Should throw if offset is not defined in state', async () => {
+      let ctx = {
+        state: {
+          count: 1,
+          apiPaginationEndpoint: 'www.wp.pl',
+          response: {
+            items: [1],
+            totalCount: 1
+          }
+        },
+
+      }
+      try {
+        await paginateResponse(ctx, () => {})
+        return Promise.reject('Should throw')
+      } catch (ex) {
+        expect(ex).be.instanceOf(Error)
+      }
+    })
+    it('Should throw if offset < 0', async () => {
+      let ctx = {
+        state: {
+          offset: -1,
+          apiPaginationEndpoint: 'www.wp.pl',
+          count: 1,
+          response: {
+            items: [1],
+            totalCount: 1
+          }
+        },
+
+      }
+      try {
+        await paginateResponse(ctx, () => {})
+        return Promise.reject('Should throw')
+      } catch (ex) {
+        expect(ex).be.instanceOf(Error)
+      }
+    })
+    it('Should throw if count is not defined in state', async () => {
+      let ctx = {
+        state: {
+          apiPaginationEndpoint: 'www.wp.pl',
+          offset: 1,
+          response: {
+            items: [1],
+            totalCount: 1
+          }
+        },
+
+      }
+      try {
+        await paginateResponse(ctx, () => {})
+        return Promise.reject('Should throw')
+      } catch (ex) {
+        expect(ex).be.instanceOf(Error)
+      }
+    })
+    it('Should throw if count < 0', async () => {
+      let ctx = {
+        state: {
+          offset: 2,
+          apiPaginationEndpoint: 'www.wp.pl',
+          count: -1,
+          response: {
+            items: [1],
+            totalCount: 1
+          }
+        },
+
+      }
+      try {
+        await paginateResponse(ctx, () => {})
+        return Promise.reject('Should throw')
+      } catch (ex) {
+        expect(ex).be.instanceOf(Error)
+      }
+    })
+    it('Should throw if count == 0', async () => {
+      let ctx = {
+        state: {
+          offset: 2,
+          apiPaginationEndpoint: 'www.wp.pl',
+          count: 0,
+          response: {
+            items: [1],
+            totalCount: 1
+          }
+        },
+
+      }
+      try {
+        await paginateResponse(ctx, () => {})
+        return Promise.reject('Should throw')
+      } catch (ex) {
+        expect(ex).be.instanceOf(Error)
+      }
+    })
+    it('Should throw if apiPaginationEndpoint is missing', async () => {
+      let ctx = {
+        state: {
+          offset: 2,
+          count: 0,
+          response: {
+            items: [1],
+            totalCount: 1
+          }
+        },
+
+      }
+      try {
+        await paginateResponse(ctx, () => {})
+        return Promise.reject('Should throw')
+      } catch (ex) {
+        expect(ex).be.instanceOf(Error)
+      }
+    })
+    it('Should throw if response is not defined in state', async () => {
+      let ctx = {
+        state: {
+          apiPaginationEndpoint: 'www.wp.pl',
+          count: 1,
+          offset: 1,
+        },
+      }
+      try {
+        await paginateResponse(ctx, () => {})
+        return Promise.reject('Should throw')
+      } catch (ex) {
+        expect(ex).be.instanceOf(Error)
+      }
+    })
+    it('Should throw if response.items is not defined in state', async () => {
+      let ctx = {
+        state: {
+          apiPaginationEndpoint: 'www.wp.pl',
+          count: 1,
+          offset: 1,
+          response: {
+            totalCount: 1
+          }
+        },
+
+      }
+      try {
+        await paginateResponse(ctx, () => {})
+        return Promise.reject('Should throw')
+      } catch (ex) {
+        expect(ex).be.instanceOf(Error)
+      }
+    })
+    it('Should throw if response.items is not array', async () => {
+      let ctx = {
+        state: {
+          apiPaginationEndpoint: 'www.wp.pl',
+          count: 1,
+          offset: 1,
+          response: {
+            totalCount: 1,
+            items: 1
+          }
+        },
+
+      }
+      try {
+        await paginateResponse(ctx, () => {})
+        return Promise.reject('Should throw')
+      } catch (ex) {
+        expect(ex).be.instanceOf(Error)
+      }
+    })
+    it('Should throw if response.items is empty array', async () => {
+      let ctx = {
+        state: {
+          apiPaginationEndpoint: 'www.wp.pl',
+          count: 1,
+          offset: 1,
+          response: {
+            totalCount: 1,
+            items: []
+          }
+        },
+
+      }
+      try {
+        await paginateResponse(ctx, () => {})
+        return Promise.reject('Should throw')
+      } catch (ex) {
+        expect(ex).be.instanceOf(Error)
+      }
+    })
+    it('Should throw if response.totalCount is not defined in state', async () => {
+      let ctx = {
+        state: {
+          count: 1,
+          apiPaginationEndpoint: 'www.wp.pl',
+          offset: 1,
+          response: {
+            items: [1],
+          }
+        },
+
+      }
+      try {
+        await paginateResponse(ctx, () => {})
+        return Promise.reject('Should throw')
+      } catch (ex) {
+        expect(ex).be.instanceOf(Error)
+      }
+    })
+    it('Should throw if response.totalCount < 0', async () => {
+      let ctx = {
+        state: {
+          count: 1,
+          apiPaginationEndpoint: 'www.wp.pl',
+          offset: 1,
+          response: {
+            items: [1],
+            totalCount: -1
+          }
+        },
+
+      }
+      try {
+        await paginateResponse(ctx, () => {})
+        return Promise.reject('Should throw')
+      } catch (ex) {
+        expect(ex).be.instanceOf(Error)
+      }
+    })
+    it('Should paginateResponse the response', async () => {
+      let ctx = {
+        state: {
+          count: 5,
+          apiPaginationEndpoint: 'www.wp.pl',
+          offset: 10,
+          response: {
+            items: [1, 2, 3, 4, 5],
+            totalCount: 51
+          }
+        },
+
+      }
+
+      try {
+        await paginateResponse(ctx, () => {})
+      } catch (ex) {
+        throw new Error('Should not throw' + ex)
+      }
+
+      let response = ctx.state.response
+
+      expect(response).to.have.property('items')
+      expect(isArray(response.items)).to.be.true
+      expect(response.items.length).to.be.equal(5)
+      expect(response).to.have.property('_pagination')
+      expect(response._pagination).to.have.property('totalCount').which.equals(51)
+      expect(response._pagination).to.have.property('requestCount').which.equals(5)
+      expect(response._pagination).to.have.property('requestOffset').which.equals(10)
+      expect(response._pagination).to.have.property('requestPageNumber').which.equals(2)
+      expect(response._pagination).to.have.property('requestPageNumberDisplay').which.equals('3')
+      expect(response._pagination).to.have.property('totalPageCount').which.equals(11)
+      expect(response._pagination).to.have.property('previousUrl').which.equals('www.wp.pl?offset=5&count=5')
+      expect(response._pagination).to.have.property('nextUrl').which.equals('www.wp.pl?offset=15&count=5')
+      expect(response._pagination).to.have.property('firstUrl').which.equals('www.wp.pl?offset=0&count=5')
+      expect(response._pagination).to.have.property('lastUrl').which.equals('www.wp.pl?offset=50&count=5')
+      expect(response._pagination).to.have.property('pages')
     })
   })
 })
