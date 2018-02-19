@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import { fixedResponseBody } from '../lib'
+import { fixedResponseBody, emptyResponseBody } from '../lib'
 import noop from 'lodash/noop'
 
 describe('Response', () => {
@@ -21,4 +21,13 @@ describe('Response', () => {
       expect(ctx.state).to.have.property('response').which.equal(toRespond)
     })
   })
+  describe('Empty response body', () => {
+    it('Should set the response to empty string', async () => {
+      const ctx = { state: {} }
+      await emptyResponseBody(ctx, noop)
+      expect(ctx.state).to.have.property('response').which.equal('')
+    })
+  })
 })
+
+
