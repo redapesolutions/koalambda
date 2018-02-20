@@ -3,7 +3,9 @@ import {
   jsonBody,
   callbackBased,
   standardHttpResponse,
-  HTTP_ERROR_CODES
+  HTTP_ERROR_CODES,
+  ForbiddenError,
+  UnauthorizedError
 } from '../lib'
 import { expect } from 'chai'
 import noop from 'lodash/noop'
@@ -70,24 +72,80 @@ describe('http', () => {
           expect(JSON.parse(response.body)).to.equal(whatToReply) // JSON encoded body
         })
     })
-    it('should handle a planned error correctly', () => {
-      const cb = spy()
+    it('should handle a planned error correctly', async () => {
       const event = {}
       const context = {}
       const exception = { code: 42, message: 'Nope' }
-      return kompose(
+
+      let preparedKompose = kompose(
         callbackBased,
         standardHttpResponse,
         async (ctx, next) => {
           throw exception
         }
-      )(event, context, cb)
-        .then(_ => {
-          const [err, response] = cb.firstCall.args
-          expect(err).to.be.null // Error goes on http, no on actual function
-          expect(response.statusCode).to.equal(400)
-          expect(JSON.parse(response.body)).to.eql(exception)
-        })
+      )
+
+      let result = await new Promise((resolve, reject) => {
+        preparedKompose(event, context, (err, data) => {
+          if(err)
+            reject(err)
+          else
+            resolve(data)
+        })         
+      });
+
+      console.log(result)
+      expect(result.statusCode).to.equal(400)
+      expect(JSON.parse(result.body)).to.eql(exception)      
+    })
+    it('should return forbidden', async () => {
+      const event = {}
+      const context = {}
+      const exception = new ForbiddenError()
+      let preparedKompose = kompose(
+        callbackBased,
+        standardHttpResponse,
+        async (ctx, next) => {
+          throw exception
+        }
+      )
+
+      let result = await new Promise((resolve, reject) => {
+        preparedKompose(event, context, (err, data) => {
+          if(err)
+            reject(err)
+          else
+            resolve(data)
+        })         
+      });
+
+      console.log(result)
+      expect(result.statusCode).to.equal(403)
+    })
+    it('should return unauthorized', async () => {
+      const cb = spy()
+      const event = {}
+      const context = {}
+      const exception = new UnauthorizedError()
+      let preparedKompose = kompose(
+        callbackBased,
+        standardHttpResponse,
+        async (ctx, next) => {
+          throw exception
+        }
+      )
+
+      let result = await new Promise((resolve, reject) => {
+        preparedKompose(event, context, (err, data) => {
+          if(err)
+            reject(err)
+          else
+            resolve(data)
+        })         
+      });
+
+      console.log(result)
+      expect(result.statusCode).to.equal(401)
     })
   })
 })
