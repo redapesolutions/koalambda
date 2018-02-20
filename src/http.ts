@@ -2,7 +2,7 @@ import get from 'lodash/get'
 import isArray from 'lodash/isArray'
 import isNumber from 'lodash/isNumber'
 
-export enum ERROR_CODES {
+export enum HTTP_ERROR_CODES {
   JSON_PARSING_ERROR=100,
   MISSING_BODY
 }
@@ -10,12 +10,12 @@ export enum ERROR_CODES {
 export const jsonBody = async (ctx, next?) => {
   let body = ctx.event.body
   if (body === null || body === undefined) {
-    throw {message: `Empty body`, code: ERROR_CODES.MISSING_BODY}
+    throw {message: `Empty body`, code: HTTP_ERROR_CODES.MISSING_BODY}
   }
   try {
       body = JSON.parse(ctx.event.body)
   } catch (ex) {
-      throw {message: `Failed to parse body: ${ex}`, code: ERROR_CODES.JSON_PARSING_ERROR}
+      throw {message: `Failed to parse body: ${ex}`, code: HTTP_ERROR_CODES.JSON_PARSING_ERROR}
   }
   ctx.state.body = body
   next && await next()
@@ -38,8 +38,19 @@ export const _makeResponse = (body: {[prop:string]: any}, statusCode = 200, cors
   return resp
 }
 
+export const makeBadRequest = message => makeError(message)
+export const makeUnauthorized = message => makeError(message, 401)
+export const makeForbidden = message => makeError(message, 403)
+
 export const _callbackBasedHttpHandleError = err => {
+  console.log('Error: ', err)
   let message: string, code: number = 400, internalCode: number = 0
+
+  if(err instanceof ForbiddenError)
+    return Promise.resolve(makeForbidden(err.message))
+
+  if(err instanceof UnauthorizedError)
+    return Promise.resolve(makeUnauthorized(err.message))
 
   if (isArray(err)) {
     [message, code] = err
@@ -55,7 +66,9 @@ export const _callbackBasedHttpHandleError = err => {
     message = 'System error'
   }
 
-  return makeError(message, code, true, internalCode)
+  return Promise.resolve(
+    makeError(message, code, true, internalCode)
+  )
 }
 
 export const makeResponse = (statusCode = 200, cors = true, headers: {[prop:string]: any} = {}) => async (ctx, next) => {
@@ -83,3 +96,16 @@ export const httpResponse = (successCode = 200, errorCode = 400, cors = true, he
 }
 
 export const standardHttpResponse = httpResponse()
+
+
+export class ForbiddenError {
+  constructor(public message) {
+      Error.apply(this, arguments);
+  }
+}
+
+export class UnauthorizedError {
+  constructor(public message) {
+      Error.apply(this, arguments);
+  }
+}
