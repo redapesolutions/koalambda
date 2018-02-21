@@ -5,7 +5,8 @@ import {
   putEventToState,
   filterProperty,
   putEnvVariableToState,
-  executeInOrder
+  executeInOrder,
+  setValue
 } from '../lib'
 import { expect } from 'chai'
 import noop from 'lodash/noop'
@@ -265,6 +266,48 @@ describe('Manipulation', () => {
 
         },
       )({}, {})
+    })
+  })
+
+  describe('setValue', () => {
+    it('should set the value if it doent exist in state', async () => {
+      let ctx = {
+        state: { }
+      }
+
+      await setValue('test', (ctx1) => 1)(ctx)
+
+      expect(ctx.state.test).to.be.equal(1)
+
+    })
+    it('should set the deep value if it doent exist in state', async () => {
+      let ctx = {
+        state: { }
+      }
+      await setValue('test.test.test', (ctx1) => 1)(ctx)
+
+      expect(ctx.state.test.test.test).to.be.equal(1)
+
+    })
+    it('should change the deep value', async () => {
+      let ctx = {
+        state: { test: { test: { test: 2 } } }
+      }
+      await setValue('test.test.test', (ctx1) => 1)(ctx)
+
+      expect(ctx.state.test.test.test).to.be.equal(1)
+
+    })
+    it('should change the value', async () => {
+      let ctx = {
+        state: { 
+          test:  2 
+        } 
+      }
+      await setValue('test', (ctx1) => 1)(ctx)
+
+      expect(ctx.state.test).to.be.equal(1)
+
     })
   })
 })

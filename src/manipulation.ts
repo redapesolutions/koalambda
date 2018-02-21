@@ -74,3 +74,15 @@ export const executeInOrder = (stopCondition: (ctx) => boolean, ...functions) =>
         }
     }
 }
+
+export const setValue = (paramName: string, valueSetter: (ctx) => any) => {
+    return async (ctx, next?) => {
+        if(!isFunction(valueSetter))
+            throw new Error('valueSetter is not a function')
+
+        let value = await valueSetter(ctx)
+
+        set(ctx.state, paramName, value)
+        next && await next()
+    }
+}
