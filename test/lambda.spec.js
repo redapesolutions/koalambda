@@ -3,6 +3,7 @@ import {
   kompose,
   contextBased,
   callbackBased,
+  doNotWaitForBgProcessesToFinish
 } from '../lib'
 import isFunction from 'lodash/isFunction'
 import noop from 'lodash/noop'
@@ -111,6 +112,35 @@ describe('Lambda', () => {
         }
       )(event, context, cb)
         .then(_ => expect(cb.calledWith(exception)).to.be.true)
+    })
+  })
+  describe('doNotWaitForBgProcessesToFinish', async () => {
+    it('', async () => {
+      let event = {
+        test: 1
+      }
+      let context = {
+        callbackWaitsForEmptyEventLoop: true
+      }
+
+      let ctx = {
+        context,
+        event
+      }
+  
+      let isNextCalled = false
+  
+      await doNotWaitForBgProcessesToFinish(ctx, _ => {
+        expect(ctx.context.callbackWaitsForEmptyEventLoop, 'Should set callbackWaitsForEmptyEventLoop to false').to.be.false
+        isNextCalled = true
+      })
+
+      expect(isNextCalled, 'Should call next function').to.be.true
+
+      //They should be the same objects
+      expect(ctx.context).to.be.equal(context)
+      expect(ctx.event).to.be.equal(event)
+      
     })
   })
 })
