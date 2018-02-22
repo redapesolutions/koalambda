@@ -14,21 +14,28 @@ export declare const _makeResponse: (body: {
     };
     body: string;
 };
-export declare const makeBadRequest: (message: any) => {
+export declare const _makeBadRequest: (message: any) => {
     statusCode: number;
     headers: {
         'Content-Type': string;
     };
     body: string;
 };
-export declare const makeUnauthorized: (message: any) => {
+export declare const _makeUnauthorized: (message: any) => {
     statusCode: number;
     headers: {
         'Content-Type': string;
     };
     body: string;
 };
-export declare const makeForbidden: (message: any) => {
+export declare const _makeForbidden: (message: any) => {
+    statusCode: number;
+    headers: {
+        'Content-Type': string;
+    };
+    body: string;
+};
+export declare const _makeRedirect: (redirectUrl: string) => {
     statusCode: number;
     headers: {
         'Content-Type': string;
@@ -45,7 +52,7 @@ export declare const _callbackBasedHttpHandleError: (err: any) => Promise<{
 export declare const makeResponse: (statusCode?: number, cors?: boolean, headers?: {
     [prop: string]: any;
 }) => (ctx: any, next: any) => Promise<void>;
-export declare const makeError: (message: string, statusCode?: number, cors?: boolean, internalErrorCode?: number) => {
+export declare const _makeError: (message: string, statusCode?: number, cors?: boolean, internalErrorCode?: number) => {
     statusCode: number;
     headers: {
         'Content-Type': string;
@@ -57,6 +64,7 @@ export declare const httpResponse: (successCode?: number, errorCode?: number, co
     [prop: string]: any;
 }) => (ctx: any, next: any) => Promise<void>;
 export declare const standardHttpResponse: (ctx: any, next: any) => Promise<void>;
+export declare const redirectHttpResponse: (linkLocation: string) => (ctx: any, next: any) => Promise<void>;
 export declare class ForbiddenError {
     message: any;
     constructor(message: any);
