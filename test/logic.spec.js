@@ -49,14 +49,18 @@ describe('when logical switches', () => {
       it('should skip the middleware if state doesnt exist', async () => {
         const middleware = spy()
         const fn = whenAttributeExists('abc', middleware)
-        await fn({}, noop)
+        await fn({
+          state: {}
+        }, noop)
         expect(middleware.called).to.be.false
       })
       it('should call the middleware if state attribute exists', async () => {
         const middleware = spy()
         const fn = whenAttributeExists('abc', middleware)
         await fn({
-          abc: 'lalal'
+          state: {
+            abc: 'lalal'
+          }
         }, noop)
         expect(middleware.called).to.be.true
       })
@@ -64,9 +68,11 @@ describe('when logical switches', () => {
         const middleware = spy()
         const fn = whenAttributeExists('abc.def.ghi', middleware)
         await fn({
-          abc: {
-            def: {
-              ghi: null
+          state: {
+            abc: {
+              def: {
+                ghi: null
+              }
             }
           }
         }, noop)
@@ -89,7 +95,9 @@ describe('when logical switches', () => {
         const middleware = spy()
         const fn = whenAttributeEquals('abc', 42, middleware)
         await fn({
-          abc: 66
+          state: {
+            abc: 66
+          }
         }, noop)
         expect(middleware.called).to.be.false
       })
@@ -97,7 +105,9 @@ describe('when logical switches', () => {
         const middleware = spy()
         const fn = whenAttributeEquals('abc', 42, middleware)
         await fn({
-          abc: 42
+          state: {
+            abc: 42
+          }
         }, noop)
         expect(middleware.called).to.be.true
       })
