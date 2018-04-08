@@ -73,8 +73,6 @@ describe('Parameters', async () => {
             } catch (err) {
                 if (err instanceof AssertionError)
                     throw err
-
-                console.log(err)
                 throw new Error('Should not throw')
             }
         })
@@ -106,8 +104,6 @@ describe('Parameters', async () => {
             } catch (err) {
                 if (err instanceof AssertionError)
                     throw err
-
-                console.log(err)
                 throw new Error('Should not throw')
             }
         })
@@ -145,8 +141,6 @@ describe('Parameters', async () => {
             } catch (err) {
                 if (err instanceof AssertionError)
                     throw err
-
-                console.log(err)
                 throw new Error('Should not throw')
             }
         })
@@ -183,8 +177,6 @@ describe('Parameters', async () => {
             } catch (err) {
                 if (err instanceof AssertionError)
                     throw err
-
-                console.log(err)
                 throw new Error('Should not throw')
             }
         })
@@ -258,8 +250,6 @@ describe('Parameters', async () => {
             } catch (err) {
                 if (err instanceof AssertionError)
                     throw err
-
-                console.log(err)
                 throw new Error('Should not throw')
             }
         })
@@ -291,8 +281,6 @@ describe('Parameters', async () => {
             } catch (err) {
                 if (err instanceof AssertionError)
                     throw err
-
-                console.log(err)
                 throw new Error('Should not throw')
             }
         })
@@ -330,8 +318,6 @@ describe('Parameters', async () => {
             } catch (err) {
                 if (err instanceof AssertionError)
                     throw err
-
-                console.log(err)
                 throw new Error('Should not throw')
             }
         })
@@ -368,8 +354,6 @@ describe('Parameters', async () => {
             } catch (err) {
                 if (err instanceof AssertionError)
                     throw err
-
-                console.log(err)
                 throw new Error('Should not throw')
             }
         })
