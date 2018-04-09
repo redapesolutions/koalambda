@@ -5,3 +5,5 @@ export * from './lambda';
 export * from './response';
 export * from './manipulation';
 export * from './parameters';
+export * from './logic';
+export * from './interfaces';

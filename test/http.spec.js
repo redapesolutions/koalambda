@@ -370,7 +370,6 @@ describe('http', () => {
         })         
       });
 
-      console.log(result)
       expect(result.statusCode).to.equal(400)
       expect(JSON.parse(result.body)).to.eql(exception)      
     })

@@ -54,7 +54,6 @@ export const _makeRedirect = (redirectUrl: string) => {
 }
 
 export const _callbackBasedHttpHandleError = err => {
-  console.log('Error: ', err)
   let message = 'System error', code = 400, internalCode = 0
 
   if (err instanceof ForbiddenError)

@@ -80,6 +80,21 @@ Takes value with specified name and puts it in the state
 ### filter ↓
 
 filter the specified argument by specified function
+## Logical switches
+
+### when
+
+Takes a "check" callback which receives the context, and a middleware. If check passes (either as a boolean or a Promise which resolves with a boolean), middleware is called.
+
+*Note:* Check promise rejection is not currently considered a fail of the check
+
+### whenAttributeExists
+
+Similar to `when` but checks whether a given attribute exists on the state. Uses `lodash.get` for shortcut (dot notation)
+
+### whenAttributeEquals
+
+Similar to `whenAttributeExists` but checks whether the given attribute equals the given value.
 
 ## Changelog
 
