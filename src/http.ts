@@ -75,7 +75,7 @@ export const _callbackBasedHttpHandleError = err => {
     code = 400
   }
 
-  if (!internalCode || !isNumber(internalCode)) {
+  if (!internalCode) {
     internalCode = 0
   }
 
