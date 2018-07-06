@@ -139,7 +139,7 @@ describe('http', () => {
         let result = await _callbackBasedHttpHandleError({message: 'ok', code: "NotNumber"})
 
         expect(result).to.have.property('statusCode').which.equals(400)
-        expect(result).to.have.property('body').which.equals('{"message":"ok","code":0}')
+        expect(result).to.have.property('body').which.equals('{"message":"ok","code":"NotNumber"}')
       })
 
       it('should return code 0 when is object and 400 code number if code is not defined', async () => {
