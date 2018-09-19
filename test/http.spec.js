@@ -16,7 +16,8 @@ import {
   makeResponse,
   _makeError,
   makeSuccess,
-  httpResponse
+  httpResponse,
+  validateBodyWithJsonSchema
 } from '../lib'
 import { expect } from 'chai'
 import noop from 'lodash/noop'
@@ -158,6 +159,58 @@ describe('http', () => {
     })    
   })
   
+  describe('validateBodyWithJsonSchema middleware', () => {
+    it('should not throw is the object is valid', async () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          test: {
+            type: 'string'
+          }
+        }
+      }
+
+      let ctx = {
+        state: { 
+          body: {
+            test: 'test'
+          }
+        }
+      }
+
+      await validateBodyWithJsonSchema(schema)(ctx)
+    })
+    it('should throw is the object is not valid', async () => {
+      const schema = {
+        type: 'object',
+        properties: {
+          test: {
+            type: 'string'
+          }
+        }
+      }
+
+      let ctx = {
+        state: { 
+          body: {
+            test: 1
+          }
+        }
+      }
+
+      let errorThrown = false
+
+      try{
+        await validateBodyWithJsonSchema(schema)(ctx)
+      } catch (err){
+        errorThrown = true
+      }
+
+      expect(errorThrown).to.be.true
+
+    })
+  })
+
   describe('httpResponse middleware', () => {
     it('Should make response in state', async () => {
       let ctx = {

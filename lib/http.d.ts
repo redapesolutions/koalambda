@@ -3,6 +3,7 @@ export declare enum HTTP_ERROR_CODES {
     MISSING_BODY = 101,
 }
 export declare const jsonBody: (ctx: any, next?: any) => Promise<void>;
+export declare const validateBodyWithJsonSchema: (schema: any) => (ctx: any, next?: any) => Promise<void>;
 export declare const _makeResponse: (body: {
     [prop: string]: any;
 }, statusCode?: number, cors?: boolean, headers?: {

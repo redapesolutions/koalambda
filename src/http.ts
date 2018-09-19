@@ -1,6 +1,7 @@
 import get from 'lodash/get'
 import isArray from 'lodash/isArray'
 import isNumber from 'lodash/isNumber'
+import * as Ajv from 'ajv'
 
 export enum HTTP_ERROR_CODES {
   JSON_PARSING_ERROR = 100,
@@ -20,6 +21,35 @@ export const jsonBody = async (ctx, next?) => {
   ctx.state.body = body
   next && await next()
 }
+
+export const validateBodyWithJsonSchema = (schema) => {
+  const ajv = new Ajv()
+  let validator = null
+  try {
+      validator = ajv.compile(schema)
+  } catch (err) {
+      console.log('ERROR when compiling the schema', err)
+      throw err
+  }
+
+  return async (ctx, next?) => {
+      if (ctx.state.body === null || ctx.state.body === undefined)
+          throw { message: 'property body is missing in the state'}
+  
+      let isValid = validator(ctx.state.body)
+      console.log('isValid', isValid)
+
+      if(!isValid)
+          throw {
+              message: `There was some json validation errors: ${JSON.stringify(validator.errors)}`,
+              code: 'VALIDATION_ERROR',
+              errors: validator.errors
+          }
+  
+      next && await next()
+  }
+}
+
 
 export const _makeResponse = (body: { [prop: string]: any }, statusCode = 200, cors = true, headers: { [prop: string]: any } = {}) => {
   const resp = {
